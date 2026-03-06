@@ -1011,7 +1011,7 @@
         }
 
         /* ── Responsive ── */
-        @media (max-width: 760px) {
+        @media (max-width: 900px) {
             .stats-row {
                 grid-template-columns: 1fr 1fr;
             }
@@ -1021,13 +1021,100 @@
             }
 
             .plans-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 640px) {
+            .page-wrap {
+                padding: 88px 16px 48px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-card-val {
+                font-size: 1.5rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+                letter-spacing: -1px;
+            }
+
+            .panel-header {
+                padding: 14px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .panel-body {
+                padding: 16px;
+            }
+
+            .auth-card {
+                padding: 32px 24px;
+            }
+
+            .modal {
+                width: calc(100vw - 32px);
+                padding: 24px;
+            }
+
+            .code-tabs {
+                overflow-x: auto;
+            }
+
+            .code-tab {
+                padding: 10px 14px;
+                font-size: 0.74rem;
+                white-space: nowrap;
+            }
+
+            .code-block {
+                font-size: 0.73rem;
+                padding: 16px;
+            }
+
+            .table-wrap {
+                font-size: 0.78rem;
+            }
+
+            thead th,
+            tbody td {
+                padding: 10px 10px;
+            }
+        }
+
+        @media (max-width: 420px) {
             .stats-row {
                 grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .nav-badge {
+                display: none;
             }
         }
     </style>
