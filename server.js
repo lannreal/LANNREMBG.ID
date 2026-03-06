@@ -244,6 +244,16 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'LANNREMBG.ID', time: new Date().toISOString() });
 });
 
+// ─── Debug: Test Python + rembg (buka di browser untuk cek) ───────────────────
+app.get('/api/test-python', (req, res) => {
+    exec('python3 -c "import rembg; print(\'rembg OK\')"', { timeout: 15000 }, (err, stdout, stderr) => {
+        if (err) {
+            return res.json({ ok: false, error: stderr || err.message });
+        }
+        res.json({ ok: true, output: stdout.trim() });
+    });
+});
+
 // ─── Remove Background Endpoint ──────────────────────────────────────────────
 app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) => {
     if (!req.file) {
@@ -274,7 +284,10 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
     const runnerPath = path.join(__dirname, 'rembg_runner.py');
     const inputFixed = inputPath.replace(/\\/g, '/');
     const outputFixed = outputPath.replace(/\\/g, '/');
-    const command = `python "${runnerPath}" "${inputFixed}" "${outputFixed}" "${model}"`;
+    const command = `python3 "${runnerPath}" "${inputFixed}" "${outputFixed}" "${model}"`;
+
+    // Kirim header dulu agar Railway tidak timeout (keep-alive trick)
+    res.setHeader('X-Accel-Buffering', 'no');
 
     exec(command, { timeout: 180000 }, (error, stdout, stderr) => {
         fs.unlink(inputPath, () => { });
@@ -284,7 +297,6 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
         if (error) {
             console.error('[rembg] Error:', stderr || error.message);
 
-            // Log history untuk API user
             if (req.apiUser) {
                 const user = findById(req.apiUser.id);
                 if (user) {
@@ -295,7 +307,7 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
 
             return res.status(500).json({
                 success: false,
-                error: 'Proses gagal. Pastikan rembg terinstall: pip install rembg onnxruntime'
+                error: 'Proses gagal: ' + (stderr || error.message).slice(0, 200)
             });
         }
 
@@ -308,7 +320,6 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
 
         console.log(`[rembg] Done: ${outputName} (${(stats.size / 1024).toFixed(1)} KB) | ${duration}ms`);
 
-        // Update usage & history untuk API user
         if (req.apiUser) {
             const user = findById(req.apiUser.id);
             if (user) {
@@ -321,7 +332,6 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
             }
         }
 
-        // Auto-delete setelah 10 menit
         setTimeout(() => {
             fs.unlink(outputPath, () => console.log(`[cleanup] ${outputName}`));
         }, 10 * 60 * 1000);
@@ -350,4 +360,14 @@ app.listen(PORT, () => {
     console.log(`🗄️   Database: ${DB_FILE}`);
     console.log(`\n  npm install bcryptjs jsonwebtoken`);
     console.log(`  pip install rembg onnxruntime\n`);
+
+    // Startup check: pastikan python3 + rembg tersedia
+    exec('python3 -c "import rembg; print(\'[startup] rembg OK\')"', { timeout: 10000 }, (err, stdout, stderr) => {
+        if (err) {
+            console.error('[startup] ⚠️  rembg TIDAK TERSEDIA:', stderr || err.message);
+            console.error('[startup] Jalankan: pip install rembg onnxruntime');
+        } else {
+            console.log(stdout.trim());
+        }
+    });
 });
