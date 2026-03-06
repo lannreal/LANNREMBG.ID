@@ -1564,7 +1564,7 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
     </div><!-- /page-wrap -->
 
     <script>
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE = window.location.origin; // otomatis: localhost atau Railway
         let currentUser = null;
         let keyVisible = false;
 

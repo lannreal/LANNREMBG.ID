@@ -2041,7 +2041,7 @@
 
     <!-- ─── SCRIPTS ────────────────────────────────────────────────────── -->
     <script>
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE = window.location.origin; // otomatis: localhost atau Railway
 
         /* ─── Custom Cursor ─────────────────────────────────────────── */
         const cursorDot = document.getElementById('cursor-dot');
@@ -2326,13 +2326,24 @@
 
             showProcessing(true);
 
+            // Timeout 3 menit (rembg bisa lambat di server)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3 * 60 * 1000);
+
             try {
                 const res = await fetch(`${API_BASE}/api/remove-bg`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
-                const data = await res.json();
+                clearTimeout(timeoutId);
 
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server error: ${res.status}`);
+                }
+
+                const data = await res.json();
                 showProcessing(false);
 
                 if (!data.success) throw new Error(data.error || 'Gagal memproses gambar.');
@@ -2349,9 +2360,13 @@
 
                 showToast('Background berhasil dihapus! Siap diunduh.', 'success');
             } catch (err) {
+                clearTimeout(timeoutId);
                 showProcessing(false);
-                showToast(err.message || 'Terjadi kesalahan. Coba lagi.', 'error');
-                console.error(err);
+                let msg = err.message || 'Terjadi kesalahan.';
+                if (err.name === 'AbortError') msg = 'Timeout: server terlalu lama merespons. Coba gambar lebih kecil.';
+                if (msg === 'Failed to fetch') msg = 'Tidak bisa konek ke server. Cek koneksi internet kamu.';
+                showToast(msg, 'error');
+                console.error('[upload error]', err);
             }
         }
 
