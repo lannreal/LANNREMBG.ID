@@ -1275,7 +1275,7 @@
                             stroke-width="2">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
-                        Request Bulan Ini
+                        Request Hari Ini
                     </div>
                     <div class="stat-card-val val-cyan" id="stat-used">—</div>
                     <div class="stat-card-sub">dari <span id="stat-limit">—</span> limit</div>
@@ -1406,7 +1406,7 @@
                                     <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.5">
                                             <polyline points="20 6 9 17 4 12" />
-                                        </svg> 100 request / bulan</li>
+                                        </svg> 100 request / hari</li>
                                     <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.5">
                                             <polyline points="20 6 9 17 4 12" />
@@ -1434,7 +1434,7 @@
                                     <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.5">
                                             <polyline points="20 6 9 17 4 12" />
-                                        </svg> 2.000 request / bulan</li>
+                                        </svg> 500 request / hari</li>
                                     <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.5">
                                             <polyline points="20 6 9 17 4 12" />
@@ -1491,7 +1491,7 @@
                         Salin
                     </button>
                     <pre><span class="c-comment"># Remove background dengan cURL</span>
-curl -X POST http://localhost:3000/api/remove-bg \
+curl -X POST <span id="curl-url" class="c-cyan">SITE_URL</span>/api/remove-bg \
   -H <span class="c-string">"X-API-Key: <span id="curl-key">YOUR_API_KEY</span>"</span> \
   -F <span class="c-string">"image=@/path/to/gambar.jpg"</span> \
   -F <span class="c-string">"model=u2netp"</span> \
@@ -1511,7 +1511,7 @@ curl -X POST http://localhost:3000/api/remove-bg \
 formData.<span class="c-method">append</span>(<span class="c-string">'image'</span>, fileInput.files[<span class="c-val">0</span>]);
 formData.<span class="c-method">append</span>(<span class="c-string">'model'</span>, <span class="c-string">'u2netp'</span>);
 
-<span class="c-keyword">const</span> <span class="c-var">res</span> = <span class="c-keyword">await</span> <span class="c-method">fetch</span>(<span class="c-string">'http://localhost:3000/api/remove-bg'</span>, {
+<span class="c-keyword">const</span> <span class="c-var">res</span> = <span class="c-keyword">await</span> <span class="c-method">fetch</span>(<span class="c-string">'<span id="js-url">https://your-app.up.railway.app</span>/api/remove-bg'</span>, {
   method: <span class="c-string">'POST'</span>,
   headers: { <span class="c-string">'X-API-Key'</span>: <span class="c-string">'<span id="js-key">YOUR_API_KEY</span>'</span> },
   body: <span class="c-var">formData</span>
@@ -1534,7 +1534,7 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
 
 <span class="c-keyword">with</span> <span class="c-method">open</span>(<span class="c-string">'gambar.jpg'</span>, <span class="c-string">'rb'</span>) <span class="c-keyword">as</span> <span class="c-var">f</span>:
     res = requests.<span class="c-method">post</span>(
-        <span class="c-string">'http://localhost:3000/api/remove-bg'</span>,
+        <span class="c-string">'<span id="py-url">https://your-app.up.railway.app</span>/api/remove-bg'</span>,
         headers={<span class="c-string">'X-API-Key'</span>: <span class="c-string">'<span id="py-key">YOUR_API_KEY</span>'</span>},
         files={<span class="c-string">'image'</span>: f},
         data={<span class="c-string">'model'</span>: <span class="c-string">'u2netp'</span>}
@@ -1555,7 +1555,7 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
                     </button>
                     <pre><span class="c-var">$curl</span> = <span class="c-method">curl_init</span>();
 <span class="c-method">curl_setopt_array</span>(<span class="c-var">$curl</span>, [
-  CURLOPT_URL            => <span class="c-string">'http://localhost:3000/api/remove-bg'</span>,
+  CURLOPT_URL            => <span class="c-string">'<span id="php-url">https://your-app.up.railway.app</span>/api/remove-bg'</span>,
   CURLOPT_POST           => <span class="c-keyword">true</span>,
   CURLOPT_RETURNTRANSFER => <span class="c-keyword">true</span>,
   CURLOPT_HTTPHEADER     => [<span class="c-string">'X-API-Key: <span id="php-key">YOUR_API_KEY</span>'</span>],
@@ -1654,6 +1654,15 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
         const API_BASE = window.location.origin; // otomatis: localhost atau Railway
         let currentUser = null;
         let keyVisible = false;
+
+        /* ── Inject real site URL ke semua code snippets ─────── */
+        (function () {
+            const url = window.location.origin;
+            ['curl-url', 'js-url', 'py-url', 'php-url'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = url;
+            });
+        })();
 
         /* ── Toast ──────────────────────────────────────────── */
         function toast(msg, type = 'success') {
@@ -1764,7 +1773,7 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
         function renderDashboard(user, usage, history) {
             document.getElementById('dash-name').textContent = user.name;
 
-            const used = usage.thisMonth || 0;
+            const used = usage.today || 0;
             const limit = usage.limit || 100;
             const remaining = Math.max(0, limit - used);
             const pct = Math.min(100, (used / limit) * 100);

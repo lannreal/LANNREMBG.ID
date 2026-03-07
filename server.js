@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'lannrembg_secret_key_2024';
 
 // ─── Free Tier Limit ─────────────────────────────────────────────────────────
-const FREE_LIMIT = 100; // request per bulan
+const FREE_LIMIT = 100; // request per hari
 
 // ─── Directories ─────────────────────────────────────────────────────────────
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
@@ -61,17 +61,17 @@ function saveUser(user) {
 }
 
 // ─── Usage Helpers ────────────────────────────────────────────────────────────
-function getMonthKey() {
+function getDayKey() {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function getUsageThisMonth(user) {
-    return (user.usage || {})[getMonthKey()] || 0;
+function getUsageToday(user) {
+    return (user.usage || {})[getDayKey()] || 0;
 }
 
 function incrementUsage(user) {
-    const key = getMonthKey();
+    const key = getDayKey();
     if (!user.usage) user.usage = {};
     user.usage[key] = (user.usage[key] || 0) + 1;
     user.totalRequests = (user.totalRequests || 0) + 1;
@@ -113,8 +113,8 @@ function apiKeyMiddleware(req, res, next) {
     const user = findByApiKey(apiKey);
     if (!user) return res.status(401).json({ success: false, error: 'API key tidak valid.' });
 
-    const used = getUsageThisMonth(user);
-    const limit = user.tier === 'pro' ? 2000 : FREE_LIMIT;
+    const used = getUsageToday(user);
+    const limit = user.tier === 'pro' ? 500 : FREE_LIMIT; // pro: 500/hari, free: 100/hari
     if (used >= limit) {
         return res.status(429).json({
             success: false,
@@ -201,12 +201,12 @@ app.get('/api/auth/me', authMiddleware, (req, res) => {
     const user = findById(req.userId);
     if (!user) return res.status(404).json({ success: false, error: 'User tidak ditemukan.' });
 
-    const limit = user.tier === 'pro' ? 2000 : FREE_LIMIT;
+    const limit = user.tier === 'pro' ? 500 : FREE_LIMIT; // pro: 500/hari, free: 100/hari
     res.json({
         success: true,
         user: sanitizeUser(user),
         usage: {
-            thisMonth: getUsageThisMonth(user),
+            today: getUsageToday(user),
             total: user.totalRequests || 0,
             limit
         },
@@ -261,13 +261,18 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
     }
 
     const allowedModels = ['u2net', 'u2netp'];
-    const model = allowedModels.includes(req.body.model) ? req.body.model : 'u2netp';
+    let model = allowedModels.includes(req.body.model) ? req.body.model : 'u2netp';
+
+    // Free tier hanya boleh u2netp (u2net terlalu berat & sering timeout di Railway)
+    if (model === 'u2net' && (!req.apiUser || req.apiUser.tier !== 'pro')) {
+        model = 'u2netp'; // auto-downgrade, tidak error
+    }
 
     // Cek limit API user jika ada API key
     if (req.apiUser) {
         const user = req.apiUser;
-        const limit = user.tier === 'pro' ? 2000 : FREE_LIMIT;
-        const used = getUsageThisMonth(user);
+        const limit = user.tier === 'pro' ? 500 : FREE_LIMIT; // pro: 500/hari, free: 100/hari
+        const used = getUsageToday(user);
         if (used >= limit) {
             fs.unlink(req.file.path, () => { });
             return res.status(429).json({ success: false, error: 'Limit request tercapai.' });
