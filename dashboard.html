@@ -4,26 +4,33 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard — LANNREMBG.ID</title>
+    <title>Admin — LANNREMBG.ID</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
     <style>
+        /* ══ TOKENS ══════════════════════════════════════════════════════════════════ */
         :root {
-            --bg: #060810;
-            --bg-card: rgba(255, 255, 255, 0.035);
-            --bg-card2: rgba(255, 255, 255, 0.055);
-            --border: rgba(255, 255, 255, 0.07);
-            --border-hi: rgba(0, 229, 255, 0.2);
+            --bg: #05070f;
+            --bg1: #080b16;
+            --bg2: rgba(255, 255, 255, 0.028);
+            --bg3: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.065);
+            --border-hi: rgba(0, 229, 255, 0.18);
             --cyan: #00e5ff;
-            --cyan-soft: rgba(0, 229, 255, 0.08);
-            --green: #22c55e;
+            --cyan-dim: rgba(0, 229, 255, 0.08);
+            --cyan-glow: rgba(0, 229, 255, 0.15);
+            --green: #34d399;
             --red: #f87171;
             --amber: #fbbf24;
-            --text: #f0f4ff;
-            --muted: rgba(240, 244, 255, 0.45);
-            --radius: 12px;
-            --font-mono: 'DM Mono', monospace;
+            --purple: #a78bfa;
+            --text: #eef2ff;
+            --sub: rgba(238, 242, 255, 0.5);
+            --muted: rgba(238, 242, 255, 0.28);
+            --mono: 'DM Mono', monospace;
+            --r: 10px;
+            --r-lg: 14px;
+            --sidebar-w: 228px;
         }
 
         *,
@@ -34,137 +41,195 @@
             padding: 0;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             display: flex;
+            overflow-x: hidden;
         }
 
-        /* ── Layout ── */
+        /* ── Noise grain overlay ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: .4;
+        }
+
+        /* ══ SIDEBAR ═════════════════════════════════════════════════════════════════ */
         .sidebar {
-            width: 220px;
+            width: var(--sidebar-w);
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.02);
+            background: linear-gradient(180deg, rgba(0, 229, 255, 0.03) 0%, transparent 40%);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 24px 0;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 10;
+            z-index: 20;
+            padding: 0;
         }
 
-        .sidebar-logo {
-            padding: 0 20px 24px;
+        .sb-logo {
+            padding: 22px 20px 18px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 16px;
         }
 
-        .sidebar-logo .logo-main {
+        .sb-logo-text {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: 1rem;
+            font-size: 1.05rem;
             letter-spacing: -0.5px;
+            line-height: 1;
         }
 
-        .sidebar-logo .logo-main span {
+        .sb-logo-text span {
             color: var(--cyan);
         }
 
-        .sidebar-logo .logo-sub {
-            font-size: 0.7rem;
+        .sb-logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             color: var(--muted);
-            margin-top: 2px;
         }
 
-        .nav-item {
+        .sb-logo-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+        }
+
+        .sb-section {
+            padding: 20px 16px 6px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .sb-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 9px 20px;
-            font-size: 0.84rem;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all .2s;
-            border-left: 2px solid transparent;
+            padding: 9px 16px;
+            margin: 1px 8px;
+            border-radius: 8px;
+            font-size: 0.83rem;
             font-weight: 500;
+            color: var(--sub);
+            cursor: pointer;
+            transition: all .18s;
+            border: 1px solid transparent;
+            user-select: none;
         }
 
-        .nav-item:hover {
+        .sb-item:hover {
             color: var(--text);
-            background: var(--bg-card);
+            background: var(--bg3);
         }
 
-        .nav-item.active {
+        .sb-item.active {
             color: var(--cyan);
-            border-left-color: var(--cyan);
-            background: var(--cyan-soft);
+            background: var(--cyan-dim);
+            border-color: var(--border-hi);
         }
 
-        .nav-item svg {
+        .sb-item svg {
+            flex-shrink: 0;
+            opacity: .7;
+        }
+
+        .sb-item.active svg {
+            opacity: 1;
+        }
+
+        .sb-bottom {
+            margin-top: auto;
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+        }
+
+        .db-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .db-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
             flex-shrink: 0;
         }
 
-        .nav-section {
-            padding: 16px 20px 8px;
-            font-size: 0.65rem;
-            color: var(--muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .sidebar-bottom {
-            margin-top: auto;
-            padding: 16px 20px;
-            border-top: 1px solid var(--border);
-        }
-
+        /* ══ MAIN ════════════════════════════════════════════════════════════════════ */
         .main {
-            margin-left: 220px;
+            margin-left: var(--sidebar-w);
             flex: 1;
-            padding: 28px 32px;
-            max-width: 1400px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
         }
 
         .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 28px;
+            padding: 24px 32px 0;
+            margin-bottom: 24px;
         }
 
-        .page-title {
+        .page-heading {
             font-family: 'Syne', sans-serif;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             letter-spacing: -0.5px;
+        }
+
+        .page-sub {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 3px;
         }
 
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        .content {
+            padding: 0 32px 40px;
         }
 
-        .status-label {
-            font-size: 0.8rem;
-            color: var(--muted);
-        }
-
-        /* ── Auth Gate ── */
+        /* ══ AUTH GATE ═══════════════════════════════════════════════════════════════ */
         #auth-gate {
             position: fixed;
             inset: 0;
@@ -172,209 +237,318 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
+            z-index: 200;
         }
 
-        .auth-box {
-            background: var(--bg-card2);
+        .auth-card {
+            width: 340px;
+            background: var(--bg1);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 40px;
-            width: 360px;
+            border-radius: 20px;
+            padding: 36px 32px;
             text-align: center;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
         }
 
-        .auth-box h2 {
-            font-family: 'Syne', sans-serif;
+        .auth-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--cyan-dim);
+            border: 1px solid var(--border-hi);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
             font-size: 1.4rem;
-            margin-bottom: 8px;
         }
 
-        .auth-box p {
+        .auth-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 6px;
+        }
+
+        .auth-sub {
+            font-size: 0.8rem;
             color: var(--muted);
-            font-size: 0.85rem;
             margin-bottom: 24px;
+            line-height: 1.5;
         }
 
         .auth-input {
             width: 100%;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.04);
+            padding: 11px 14px;
+            background: var(--bg2);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--r);
             color: var(--text);
-            font-size: 0.9rem;
-            font-family: var(--font-mono);
+            font-family: var(--mono);
+            font-size: 0.88rem;
             outline: none;
-            margin-bottom: 12px;
+            transition: border .2s;
+            margin-bottom: 10px;
         }
 
         .auth-input:focus {
             border-color: var(--cyan);
         }
 
-        .btn-auth {
+        .auth-btn {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             background: var(--cyan);
             color: #000;
             font-weight: 700;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-family: 'DM Sans', sans-serif;
+            border: none;
+            border-radius: var(--r);
+            cursor: pointer;
+            transition: all .2s;
         }
 
-        .auth-error {
+        .auth-btn:hover {
+            background: #00d4ec;
+            box-shadow: 0 0 20px var(--cyan-glow);
+        }
+
+        .auth-err {
+            font-size: 0.75rem;
             color: var(--red);
-            font-size: 0.8rem;
             margin-top: 8px;
+            min-height: 18px;
         }
 
-        /* ── Cards ── */
-        .grid-4 {
+        /* ══ STAT CARDS ══════════════════════════════════════════════════════════════ */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: var(--bg-card);
+        .stat-card {
+            background: var(--bg2);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
+            border-radius: var(--r-lg);
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .2s;
         }
 
-        .card-title {
-            font-size: 0.78rem;
-            color: var(--muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 12px;
+        .stat-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            opacity: .04;
+        }
+
+        .stat-card.c-cyan::after {
+            background: var(--cyan);
+        }
+
+        .stat-card.c-green::after {
+            background: var(--green);
+        }
+
+        .stat-card.c-amber::after {
+            background: var(--amber);
+        }
+
+        .stat-card.c-purple::after {
+            background: var(--purple);
+        }
+
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .stat-icon.c-cyan {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--cyan);
+        }
+
+        .stat-icon.c-green {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--green);
+        }
+
+        .stat-icon.c-amber {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--amber);
+        }
+
+        .stat-icon.c-purple {
+            background: rgba(167, 139, 250, 0.1);
+            color: var(--purple);
         }
 
         .stat-val {
             font-family: 'Syne', sans-serif;
-            font-size: 2rem;
             font-weight: 700;
+            font-size: 1.9rem;
             letter-spacing: -1px;
             line-height: 1;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--muted);
-            margin-top: 4px;
+            font-weight: 500;
         }
 
-        .stat-change {
-            font-size: 0.72rem;
-            margin-top: 6px;
+        /* ══ GRID LAYOUTS ════════════════════════════════════════════════════════════ */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        /* ══ PANEL ═══════════════════════════════════════════════════════════════════ */
+        .panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+        }
+
+        .panel-head {
             display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .stat-change.up {
-            color: var(--green);
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--sub);
         }
 
-        .stat-change.down {
-            color: var(--red);
+        .panel-title svg {
+            opacity: .6;
         }
 
-        /* ── Chart placeholder ── */
-        .chart-wrap {
-            height: 180px;
-            position: relative;
+        .panel-body {
+            padding: 16px 20px;
+        }
+
+        /* ══ CHART ═══════════════════════════════════════════════════════════════════ */
+        .chart-area {
+            height: 140px;
             display: flex;
             align-items: flex-end;
-            gap: 6px;
-            padding: 0 4px;
+            gap: 5px;
+            padding: 0 2px;
         }
 
-        .chart-bar {
+        .bar-col {
             flex: 1;
-            border-radius: 4px 4px 0 0;
-            transition: opacity .2s;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 2px;
         }
 
-        .chart-bar:hover {
-            opacity: 0.8;
+        .bar-seg {
+            width: 100%;
+            border-radius: 3px 3px 0 0;
+            min-height: 2px;
+            transition: opacity .2s;
+        }
+
+        .bar-seg:hover {
+            opacity: .75 !important;
         }
 
         .chart-labels {
             display: flex;
-            gap: 6px;
-            padding: 6px 4px 0;
-            margin-bottom: 16px;
+            gap: 5px;
+            padding: 6px 2px 0;
         }
 
         .chart-label {
             flex: 1;
             text-align: center;
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             color: var(--muted);
         }
 
         .chart-legend {
             display: flex;
-            gap: 16px;
-            margin-top: 12px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            color: var(--muted);
+            gap: 14px;
+            padding-top: 10px;
         }
 
         .legend-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 2px;
+            flex-shrink: 0;
         }
 
-        /* ── Table ── */
-        .table-wrap {
+        .legend-text {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        /* ══ TABLE ═══════════════════════════════════════════════════════════════════ */
+        .tbl-wrap {
             overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
         }
 
         thead th {
+            padding: 10px 14px;
             text-align: left;
-            padding: 10px 12px;
-            color: var(--muted);
-            font-weight: 600;
-            font-size: 0.72rem;
+            font-size: 0.65rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: .8px;
+            color: var(--muted);
             border-bottom: 1px solid var(--border);
         }
 
         tbody td {
-            padding: 11px 12px;
+            padding: 11px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             vertical-align: middle;
         }
@@ -384,87 +558,79 @@
         }
 
         tbody tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.015);
         }
 
+        /* ══ BADGES ══════════════════════════════════════════════════════════════════ */
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 9px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 20px;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 600;
             white-space: nowrap;
         }
 
+        .badge-cyan {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
         .badge-green {
-            background: rgba(34, 197, 94, 0.12);
+            background: rgba(52, 211, 153, 0.1);
             color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.2);
         }
 
         .badge-red {
-            background: rgba(248, 113, 113, 0.12);
+            background: rgba(248, 113, 113, 0.1);
             color: var(--red);
-        }
-
-        .badge-cyan {
-            background: var(--cyan-soft);
-            color: var(--cyan);
+            border: 1px solid rgba(248, 113, 113, 0.2);
         }
 
         .badge-amber {
-            background: rgba(251, 191, 36, 0.12);
+            background: rgba(251, 191, 36, 0.1);
             color: var(--amber);
+            border: 1px solid rgba(251, 191, 36, 0.2);
         }
 
         .badge-gray {
-            background: rgba(255, 255, 255, 0.07);
+            background: var(--bg3);
             color: var(--muted);
+            border: 1px solid var(--border);
         }
 
-        .dot {
-            width: 6px;
-            height: 6px;
+        .bdot {
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             display: inline-block;
         }
 
-        /* ── Progress bar ── */
-        .prog-wrap {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 4px;
-            height: 6px;
-            overflow: hidden;
-        }
-
-        .prog-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width .4s;
-        }
-
-        /* ── Button ── */
+        /* ══ BUTTONS ═════════════════════════════════════════════════════════════════ */
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 7px 14px;
+            padding: 7px 13px;
             border-radius: 8px;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-weight: 600;
             cursor: pointer;
             border: 1px solid var(--border);
-            background: var(--bg-card2);
-            color: var(--text);
-            transition: all .2s;
+            background: var(--bg3);
+            color: var(--sub);
+            transition: all .18s;
             font-family: 'DM Sans', sans-serif;
+            white-space: nowrap;
         }
 
         .btn:hover {
-            border-color: var(--cyan);
-            color: var(--cyan);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text);
         }
 
         .btn-primary {
@@ -474,67 +640,77 @@
         }
 
         .btn-primary:hover {
-            background: #00c8e0;
-            color: #000;
-            border-color: #00c8e0;
+            background: #00d0ea;
+            box-shadow: 0 0 16px var(--cyan-glow);
         }
 
         .btn-danger {
-            border-color: rgba(248, 113, 113, 0.3);
+            border-color: rgba(248, 113, 113, 0.2);
             color: var(--red);
         }
 
         .btn-danger:hover {
-            background: rgba(248, 113, 113, 0.1);
+            background: rgba(248, 113, 113, 0.08);
         }
 
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.72rem;
+        .btn-xs {
+            padding: 4px 9px;
+            font-size: 0.7rem;
         }
 
-        /* ── Filter bar ── */
+        /* ══ FILTER BAR ══════════════════════════════════════════════════════════════ */
         .filter-bar {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
         }
 
-        .filter-input {
-            padding: 8px 12px;
-            background: var(--bg-card);
+        .filter-input,
+        .filter-select {
+            padding: 7px 12px;
+            background: var(--bg2);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             outline: none;
+            transition: border .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-input {
             min-width: 200px;
         }
 
-        .filter-input:focus {
-            border-color: var(--cyan);
+        /* ══ PROGRESS BAR ════════════════════════════════════════════════════════════ */
+        .prog {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        .filter-select {
-            padding: 8px 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.82rem;
-            outline: none;
-            cursor: pointer;
+        .prog-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width .4s;
         }
 
-        /* ── Rate limit bars ── */
+        /* ══ RATE LIMIT ROW ══════════════════════════════════════════════════════════ */
         .rl-row {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .rl-row:last-child {
@@ -542,8 +718,8 @@
         }
 
         .rl-name {
-            min-width: 160px;
-            font-size: 0.82rem;
+            min-width: 150px;
+            font-size: 0.8rem;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -553,27 +729,107 @@
             flex: 1;
         }
 
-        .rl-count {
-            min-width: 60px;
+        .rl-num {
+            min-width: 55px;
             text-align: right;
-            font-size: 0.78rem;
-            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-family: var(--mono);
             color: var(--muted);
         }
 
-        /* ── Pages ── */
-        .page-section {
+        .rl-pct {
+            min-width: 38px;
+            text-align: right;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* ══ PLAN EDITOR ═════════════════════════════════════════════════════════════ */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--muted);
+        }
+
+        .field-input {
+            padding: 9px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.84rem;
+            outline: none;
+            transition: border .2s;
+        }
+
+        .field-input:focus {
+            border-color: var(--border-hi);
+        }
+
+        /* ══ BILLING ═════════════════════════════════════════════════════════════════ */
+        .mrr-card {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.06), rgba(167, 139, 250, 0.04));
+            border: 1px solid var(--border-hi);
+            border-radius: var(--r-lg);
+            padding: 24px;
+        }
+
+        .mrr-val {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2.4rem;
+            letter-spacing: -2px;
+            color: var(--cyan);
+        }
+
+        .mrr-label {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .rev-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.82rem;
+        }
+
+        .rev-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+        }
+
+        /* ══ PAGES ═══════════════════════════════════════════════════════════════════ */
+        .page {
             display: none;
         }
 
-        .page-section.active {
+        .page.active {
             display: block;
         }
 
-        /* ── Misc ── */
+        /* ══ UTILS ═══════════════════════════════════════════════════════════════════ */
         .mono {
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
+            font-family: var(--mono);
+            font-size: 0.76rem;
         }
 
         .text-muted {
@@ -596,58 +852,30 @@
             color: var(--amber);
         }
 
-        .mb-4 {
-            margin-bottom: 16px;
-        }
-
-        .mb-6 {
-            margin-bottom: 24px;
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        .items-center {
-            align-items: center;
-        }
-
-        .justify-between {
-            justify-content: space-between;
-        }
-
-        .gap-2 {
-            gap: 8px;
-        }
-
-        .gap-3 {
-            gap: 12px;
-        }
-
         .truncate {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 180px;
+            max-width: 160px;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 36px;
             color: var(--muted);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
 
-        .spinner {
+        .spin {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border: 2px solid var(--border);
             border-top-color: var(--cyan);
             border-radius: 50%;
-            animation: spin .8s linear infinite;
-            margin-right: 8px;
+            animation: spin .7s linear infinite;
             vertical-align: middle;
+            margin-right: 6px;
         }
 
         @keyframes spin {
@@ -656,108 +884,70 @@
             }
         }
 
-        .plan-editor {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .field-label {
-            font-size: 0.73rem;
+        .empty {
+            text-align: center;
+            padding: 32px;
             color: var(--muted);
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-style: italic;
         }
 
-        .field-input {
-            padding: 9px 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.85rem;
-            outline: none;
+        .mb-4 {
+            margin-bottom: 14px;
         }
 
-        .field-input:focus {
-            border-color: var(--cyan);
+        /* ══ RESPONSIVE ══════════════════════════════════════════════════════════════ */
+        @media(max-width:1100px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
-        /* ── Billing stub ── */
-        .billing-card {
-            background: var(--bg-card2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 16px;
-        }
-
-        .billing-amount {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-        }
-
-        .billing-sub {
-            font-size: 0.78rem;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .revenue-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 0.84rem;
-        }
-
-        .revenue-row:last-child {
-            border-bottom: none;
-        }
-
-        /* Responsive */
         @media(max-width:900px) {
-            .sidebar {
-                width: 60px;
+            :root {
+                --sidebar-w: 56px;
             }
 
-            .sidebar .nav-item span,
-            .sidebar .nav-section,
-            .sidebar-logo .logo-sub,
-            .sidebar-logo .logo-main,
-            .sidebar-bottom {
+            .sb-item span,
+            .sb-section,
+            .sb-logo-text,
+            .sb-logo-badge,
+            .sb-bottom .db-pill span {
                 display: none;
             }
 
+            .sb-item {
+                justify-content: center;
+                padding: 10px;
+            }
+
+            .sb-logo {
+                padding: 16px 10px;
+            }
+
             .main {
-                margin-left: 60px;
-                padding: 20px 16px;
+                margin-left: 56px;
             }
 
-            .grid-4 {
-                grid-template-columns: 1fr 1fr;
+            .topbar,
+            .content {
+                padding-left: 20px;
+                padding-right: 20px;
             }
 
-            .grid-2 {
+            .grid-2,
+            .grid-3 {
                 grid-template-columns: 1fr;
             }
         }
 
-        @media(max-width:600px) {
-            .grid-4 {
+        @media(max-width:640px) {
+            .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
 
-            .main {
-                padding: 16px 12px;
+            .topbar {
+                padding-top: 16px;
             }
         }
     </style>
@@ -765,29 +955,29 @@
 
 <body>
 
-    <!-- Auth Gate -->
+    <!-- ── Auth Gate ──────────────────────────────────────────────────────────── -->
     <div id="auth-gate">
-        <div class="auth-box">
-            <div style="font-size:2rem;margin-bottom:12px;">🔐</div>
-            <h2>Admin Access</h2>
-            <p>Masukkan Admin Key untuk masuk ke dashboard.</p>
-            <input class="auth-input" type="password" id="admin-key-input" placeholder="Admin Key..."
+        <div class="auth-card">
+            <div class="auth-icon">🔐</div>
+            <div class="auth-title">Admin Access</div>
+            <div class="auth-sub">Masukkan Admin Key untuk mengakses dashboard kontrol LANNREMBG.ID</div>
+            <input class="auth-input" type="password" id="admin-key-input" placeholder="Admin key..."
                 onkeydown="if(event.key==='Enter')tryLogin()" />
-            <button class="btn-auth" onclick="tryLogin()">Masuk</button>
-            <div class="auth-error" id="auth-err"></div>
+            <button class="auth-btn" onclick="tryLogin()">Masuk ke Dashboard</button>
+            <div class="auth-err" id="auth-err"></div>
         </div>
     </div>
 
-    <!-- Sidebar -->
+    <!-- ── Sidebar ────────────────────────────────────────────────────────────── -->
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <div class="logo-main">LANN<span>REMBG</span>.ID</div>
-            <div class="logo-sub">Admin Dashboard</div>
+        <div class="sb-logo">
+            <div class="sb-logo-text">LANN<span>REMBG</span>.ID</div>
+            <div class="sb-logo-badge">Admin Dashboard</div>
         </div>
 
-        <div class="nav-section">Overview</div>
-        <div class="nav-item active" onclick="showPage('overview')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-section">Overview</div>
+        <div class="sb-item active" onclick="showPage('overview',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <rect x="3" y="3" width="7" height="7" rx="1" />
                 <rect x="14" y="3" width="7" height="7" rx="1" />
                 <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -795,16 +985,16 @@
             </svg>
             <span>Dashboard</span>
         </div>
-        <div class="nav-item" onclick="showPage('monitoring')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-item" onclick="showPage('monitoring',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
             <span>Monitoring</span>
         </div>
 
-        <div class="nav-section">Manajemen</div>
-        <div class="nav-item" onclick="showPage('users')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-section">Manajemen</div>
+        <div class="sb-item" onclick="showPage('users',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -812,17 +1002,17 @@
             </svg>
             <span>Users</span>
         </div>
-        <div class="nav-item" onclick="showPage('logs')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-item" onclick="showPage('logs',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
                 <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
-            <span>Logs</span>
+            <span>Request Logs</span>
         </div>
-        <div class="nav-item" onclick="showPage('ratelimit')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-item" onclick="showPage('ratelimit',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -830,42 +1020,48 @@
             <span>Rate Limits</span>
         </div>
 
-        <div class="nav-section">Config</div>
-        <div class="nav-item" onclick="showPage('plans')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-section">Config</div>
+        <div class="sb-item" onclick="showPage('plans',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <polygon
                     points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
             <span>Plans</span>
         </div>
-        <div class="nav-item" onclick="showPage('billing')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="sb-item" onclick="showPage('billing',this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <rect x="2" y="5" width="20" height="14" rx="2" />
                 <line x1="2" y1="10" x2="22" y2="10" />
             </svg>
             <span>Billing</span>
         </div>
 
-        <div class="sidebar-bottom">
-            <div style="font-size:0.72rem;color:var(--muted)" id="db-status">● Connecting...</div>
+        <div class="sb-bottom">
+            <div class="db-pill" id="db-status">
+                <div class="dot" style="background:var(--amber)"></div>
+                <span>Connecting...</span>
+            </div>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- ══ MAIN ════════════════════════════════════════════════════════════════ -->
     <div class="main">
 
-        <!-- ══ OVERVIEW ══ -->
-        <div class="page-section active" id="page-overview">
+        <!-- ─── OVERVIEW ─────────────────────────────────────────────────────────── -->
+        <div class="page active" id="page-overview">
             <div class="topbar">
                 <div>
-                    <div class="page-title">Dashboard</div>
-                    <div style="font-size:0.78rem;color:var(--muted);margin-top:3px;" id="last-updated">Loading...</div>
+                    <div class="page-heading">Dashboard</div>
+                    <div class="page-sub" id="last-updated">Memuat data...</div>
                 </div>
                 <div class="topbar-right">
-                    <div class="status-dot" id="health-dot" style="background:var(--amber)"></div>
-                    <div class="status-label" id="health-label">Checking...</div>
-                    <button class="btn btn-sm" onclick="loadAll()">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
+                    <div style="display:flex;align-items:center;gap:6px;font-size:0.76rem;" id="health-badge">
+                        <div style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;"
+                            id="health-dot"></div>
+                        <span id="health-label" style="color:var(--muted)">Checking...</span>
+                    </div>
+                    <button class="btn btn-xs" onclick="loadAll()">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"
                             viewBox="0 0 24 24">
                             <polyline points="23 4 23 10 17 10" />
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -874,344 +1070,382 @@
                     </button>
                 </div>
             </div>
+            <div class="content">
 
-            <!-- Stats Grid -->
-            <div class="grid-4">
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                            viewBox="0 0 24 24">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                        </svg>
-                        Total Users
+                <div class="stats-grid">
+                    <div class="stat-card c-cyan">
+                        <div class="stat-icon c-cyan"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg></div>
+                        <div class="stat-val" id="s-users">—</div>
+                        <div class="stat-label">Total Users</div>
                     </div>
-                    <div class="stat-val" id="s-users">—</div>
-                    <div class="stat-label">Terdaftar</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                            viewBox="0 0 24 24">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                        </svg>
-                        Request Hari Ini
+                    <div class="stat-card c-green">
+                        <div class="stat-icon c-green"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg></div>
+                        <div class="stat-val text-green" id="s-today">—</div>
+                        <div class="stat-label">Request Hari Ini</div>
                     </div>
-                    <div class="stat-val text-cyan" id="s-today">—</div>
-                    <div class="stat-label">Via web + API</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                            viewBox="0 0 24 24">
-                            <path
-                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                        </svg>
-                        API Keys Aktif
+                    <div class="stat-card c-amber">
+                        <div class="stat-icon c-amber"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <path
+                                    d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                            </svg></div>
+                        <div class="stat-val text-amber" id="s-keys">—</div>
+                        <div class="stat-label">API Keys Aktif</div>
                     </div>
-                    <div class="stat-val" id="s-keys">—</div>
-                    <div class="stat-label">Tergenerate</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                            viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        Avg Duration
+                    <div class="stat-card c-purple">
+                        <div class="stat-icon c-purple"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg></div>
+                        <div class="stat-val" style="color:var(--purple)" id="s-duration">—</div>
+                        <div class="stat-label">Avg Duration</div>
                     </div>
-                    <div class="stat-val text-amber" id="s-duration">—</div>
-                    <div class="stat-label">Milidetik</div>
                 </div>
+
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title"><svg width="13" height="13" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg> Request 7 Hari</div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart-area" id="chart-req"></div>
+                            <div class="chart-labels" id="chart-req-labels"></div>
+                            <div class="chart-legend">
+                                <div style="display:flex;align-items:center;gap:5px;">
+                                    <div class="legend-dot" style="background:var(--cyan)"></div><span
+                                        class="legend-text">Sukses</span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:5px;">
+                                    <div class="legend-dot" style="background:var(--red)"></div><span
+                                        class="legend-text">Error</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title"><svg width="13" height="13" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                </svg> User Baru 7 Hari</div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart-area" id="chart-usr"></div>
+                            <div class="chart-labels" id="chart-usr-labels"></div>
+                            <div class="chart-legend">
+                                <div style="display:flex;align-items:center;gap:5px;">
+                                    <div class="legend-dot" style="background:var(--green)"></div><span
+                                        class="legend-text">Registrasi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title">Distribusi Plan</div>
+                        </div>
+                        <div class="panel-body" id="plan-dist">
+                            <div class="loading"><span class="spin"></span>Loading...</div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title">Request Terbaru</div>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Waktu</th>
+                                        <th>User</th>
+                                        <th>Model</th>
+                                        <th>Durasi</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-logs"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+        </div>
 
-            <div class="grid-2">
-                <!-- Chart: Requests 7 hari -->
-                <div class="card">
-                    <div class="card-title">Request 7 Hari Terakhir</div>
-                    <div class="chart-wrap" id="chart-requests"></div>
-                    <div class="chart-labels" id="chart-labels"></div>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-dot" style="background:var(--cyan)"></div>Sukses
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-dot" style="background:var(--red)"></div>Error
-                        </div>
-                    </div>
+        <!-- ─── MONITORING ────────────────────────────────────────────────────────── -->
+        <div class="page" id="page-monitoring">
+            <div class="topbar">
+                <div>
+                    <div class="page-heading">Monitoring</div>
+                    <div class="page-sub">Pantau performa & error real-time</div>
                 </div>
-
-                <!-- Chart: User growth -->
-                <div class="card">
-                    <div class="card-title">User Baru 7 Hari</div>
-                    <div class="chart-wrap" id="chart-users"></div>
-                    <div class="chart-labels" id="chart-user-labels"></div>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-dot" style="background:var(--green)"></div>Registrasi
-                        </div>
-                    </div>
-                </div>
+                <button class="btn btn-xs" onclick="loadMonitoring()">Refresh</button>
             </div>
-
-            <!-- Plan distribution + Recent requests -->
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">Distribusi Plan</div>
-                    <div id="plan-dist" style="padding-top:4px;">
-                        <div class="loading"><span class="spinner"></span>Loading...</div>
+            <div class="content">
+                <div class="stats-grid mb-4">
+                    <div class="stat-card c-green">
+                        <div class="stat-icon c-green"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg></div>
+                        <div class="stat-val text-green" id="mon-success">—</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-card c-cyan">
+                        <div class="stat-icon c-cyan"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg></div>
+                        <div class="stat-val text-cyan" id="mon-web">—</div>
+                        <div class="stat-label">Via Web UI</div>
+                    </div>
+                    <div class="stat-card c-amber">
+                        <div class="stat-icon c-amber"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <path
+                                    d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                            </svg></div>
+                        <div class="stat-val text-amber" id="mon-api">—</div>
+                        <div class="stat-label">Via API Key</div>
+                    </div>
+                    <div class="stat-card c-purple">
+                        <div class="stat-icon c-purple"><svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="15" y1="9" x2="9" y2="15" />
+                                <line x1="9" y1="9" x2="15" y2="15" />
+                            </svg></div>
+                        <div class="stat-val text-red" id="mon-error">—</div>
+                        <div class="stat-label">Error Rate</div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Request Terbaru</div>
-                    <div class="table-wrap">
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">Error Log Terbaru</div>
+                    </div>
+                    <div class="tbl-wrap">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Waktu</th>
                                     <th>User</th>
+                                    <th>Error</th>
+                                    <th>IP</th>
                                     <th>Model</th>
-                                    <th>Durasi</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="recent-logs-body">
-                                <tr>
-                                    <td colspan="5" class="loading">Loading...</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="error-logs"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ══ MONITORING ══ -->
-        <div class="page-section" id="page-monitoring">
+        <!-- ─── USERS ─────────────────────────────────────────────────────────────── -->
+        <div class="page" id="page-users">
             <div class="topbar">
-                <div class="page-title">Monitoring</div>
-                <button class="btn btn-sm" onclick="loadMonitoring()">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                        viewBox="0 0 24 24">
-                        <polyline points="23 4 23 10 17 10" />
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                    </svg>
-                    Refresh
-                </button>
-            </div>
-            <div class="grid-4 mb-6" id="mon-stats">
-                <div class="card">
-                    <div class="card-title">Success Rate</div>
-                    <div class="stat-val text-green" id="mon-success">—</div>
-                    <div class="stat-label">Hari ini</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Error Rate</div>
-                    <div class="stat-val text-red" id="mon-error">—</div>
-                    <div class="stat-label">Hari ini</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Via Web</div>
-                    <div class="stat-val" id="mon-web">—</div>
-                    <div class="stat-label">Request web UI</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Via API</div>
-                    <div class="stat-val text-cyan" id="mon-api">—</div>
-                    <div class="stat-label">Request API key</div>
-                </div>
-            </div>
-            <div class="card mb-6">
-                <div class="card-title">Error Log Terbaru</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Waktu</th>
-                                <th>User</th>
-                                <th>Error</th>
-                                <th>IP</th>
-                                <th>Model</th>
-                            </tr>
-                        </thead>
-                        <tbody id="error-log-body">
-                            <tr>
-                                <td colspan="5" class="loading">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ USERS ══ -->
-        <div class="page-section" id="page-users">
-            <div class="topbar">
-                <div class="page-title">Users</div>
-            </div>
-            <div class="filter-bar">
-                <input class="filter-input" id="user-search" placeholder="Cari nama / email..."
-                    oninput="searchUsers()" />
-                <select class="filter-select" id="user-plan-filter" onchange="searchUsers()">
-                    <option value="">Semua Plan</option>
-                    <option value="free">Free</option>
-                    <option value="pro">Pro</option>
-                </select>
-                <span class="text-muted" style="font-size:0.78rem;" id="user-count"></span>
-            </div>
-            <div class="card">
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Plan</th>
-                                <th>API Key</th>
-                                <th>Total Req</th>
-                                <th>Daftar</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-body">
-                            <tr>
-                                <td colspan="8" class="loading"><span class="spinner"></span>Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div
-                    style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;font-size:0.78rem;color:var(--muted);">
-                    <span id="users-info"></span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn btn-sm" id="btn-prev" onclick="changePage(-1)">← Prev</button>
-                        <button class="btn btn-sm" id="btn-next" onclick="changePage(1)">Next →</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ LOGS ══ -->
-        <div class="page-section" id="page-logs">
-            <div class="topbar">
-                <div class="page-title">Request Logs</div>
-                <button class="btn btn-sm" onclick="loadLogs()">Refresh</button>
-            </div>
-            <div class="filter-bar">
-                <select class="filter-select" id="log-status" onchange="loadLogs()">
-                    <option value="">Semua Status</option>
-                    <option value="200">200 OK</option>
-                    <option value="403">403 Forbidden</option>
-                    <option value="429">429 Rate Limit</option>
-                    <option value="500">500 Error</option>
-                </select>
-                <select class="filter-select" id="log-model" onchange="loadLogs()">
-                    <option value="">Semua Model</option>
-                    <option value="u2netp">u2netp</option>
-                    <option value="u2net">u2net</option>
-                </select>
-                <select class="filter-select" id="log-source" onchange="loadLogs()">
-                    <option value="">Semua Source</option>
-                    <option value="web">Web</option>
-                    <option value="api">API</option>
-                </select>
-                <span class="text-muted" style="font-size:0.78rem;" id="log-count"></span>
-            </div>
-            <div class="card">
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Waktu</th>
-                                <th>User</th>
-                                <th>Model</th>
-                                <th>Source</th>
-                                <th>Size</th>
-                                <th>Durasi</th>
-                                <th>IP</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-body">
-                            <tr>
-                                <td colspan="8" class="loading"><span class="spinner"></span>Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div
-                    style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;font-size:0.78rem;color:var(--muted);">
-                    <span id="logs-info"></span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn btn-sm" onclick="changeLogPage(-1)">← Prev</button>
-                        <button class="btn btn-sm" onclick="changeLogPage(1)">Next →</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ RATE LIMITS ══ -->
-        <div class="page-section" id="page-ratelimit">
-            <div class="topbar">
-                <div class="page-title">Rate Limits</div>
-                <button class="btn btn-sm" onclick="loadRateLimits()">Refresh</button>
-            </div>
-            <div class="card mb-6">
-                <div class="card-title">Usage Hari Ini</div>
-                <div id="rl-list">
-                    <div class="loading"><span class="spinner"></span>Loading...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ PLANS ══ -->
-        <div class="page-section" id="page-plans">
-            <div class="topbar">
-                <div class="page-title">Plans Config</div>
-            </div>
-            <div class="grid-2">
-                <div class="card" id="plan-free-card">
-                    <div class="card-title">Plan: Gratis</div>
-                    <div class="loading">Loading...</div>
-                </div>
-                <div class="card" id="plan-pro-card">
-                    <div class="card-title" style="color:var(--amber)">Plan: Pro</div>
-                    <div class="loading">Loading...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══ BILLING ══ -->
-        <div class="page-section" id="page-billing">
-            <div class="topbar">
-                <div class="page-title">Billing</div>
-            </div>
-            <div class="grid-2">
                 <div>
-                    <div class="billing-card">
-                        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px;">ESTIMASI PENDAPATAN BULAN
-                            INI</div>
-                        <div class="billing-amount text-cyan" id="bill-revenue">Rp 0</div>
-                        <div class="billing-sub" id="bill-sub">Dari 0 pengguna Pro</div>
+                    <div class="page-heading">Users</div>
+                    <div class="page-sub" id="user-count-label">—</div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="filter-bar">
+                    <input class="filter-input" id="user-search" placeholder="Cari nama / email..."
+                        oninput="searchUsers()" />
+                    <select class="filter-select" id="user-plan-f" onchange="searchUsers()">
+                        <option value="">Semua Plan</option>
+                        <option value="free">Free</option>
+                        <option value="pro">Pro</option>
+                    </select>
+                </div>
+                <div class="panel">
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Plan</th>
+                                    <th>API Key</th>
+                                    <th>Total Req</th>
+                                    <th>Daftar</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-body"></tbody>
+                        </table>
                     </div>
-                    <div class="billing-card">
-                        <div class="card-title">Breakdown</div>
-                        <div id="bill-breakdown">
-                            <div class="revenue-row"><span>Free Users</span><span class="text-muted" id="bill-free">0
-                                    users</span></div>
-                            <div class="revenue-row"><span>Pro Users</span><span class="text-cyan" id="bill-pro">0 users
-                                    × Rp 49K</span></div>
-                            <div class="revenue-row" style="font-weight:700;"><span>Total MRR</span><span
-                                    class="text-cyan" id="bill-mrr">Rp 0</span></div>
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid var(--border);font-size:0.75rem;color:var(--muted);">
+                        <span id="users-info"></span>
+                        <div style="display:flex;gap:6px;">
+                            <button class="btn btn-xs" onclick="changePage(-1)">← Prev</button>
+                            <button class="btn btn-xs" onclick="changePage(1)">Next →</button>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Riwayat (Estimasi)</div>
-                    <div id="bill-history">
-                        <div class="loading">Belum ada data historis.</div>
+            </div>
+        </div>
+
+        <!-- ─── LOGS ──────────────────────────────────────────────────────────────── -->
+        <div class="page" id="page-logs">
+            <div class="topbar">
+                <div>
+                    <div class="page-heading">Request Logs</div>
+                    <div class="page-sub" id="log-count-label">—</div>
+                </div>
+                <button class="btn btn-xs" onclick="loadLogs()">Refresh</button>
+            </div>
+            <div class="content">
+                <div class="filter-bar">
+                    <select class="filter-select" id="log-status" onchange="loadLogs()">
+                        <option value="">Semua Status</option>
+                        <option value="200">200 OK</option>
+                        <option value="403">403 Forbidden</option>
+                        <option value="429">429 Rate Limit</option>
+                        <option value="500">500 Error</option>
+                    </select>
+                    <select class="filter-select" id="log-model" onchange="loadLogs()">
+                        <option value="">Semua Model</option>
+                        <option value="u2netp">u2netp</option>
+                        <option value="u2net">u2net</option>
+                    </select>
+                    <select class="filter-select" id="log-source" onchange="loadLogs()">
+                        <option value="">Semua Source</option>
+                        <option value="web">Web</option>
+                        <option value="api">API</option>
+                    </select>
+                </div>
+                <div class="panel">
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>User</th>
+                                    <th>Model</th>
+                                    <th>Source</th>
+                                    <th>Size</th>
+                                    <th>Durasi</th>
+                                    <th>IP</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-body"></tbody>
+                        </table>
+                    </div>
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid var(--border);font-size:0.75rem;color:var(--muted);">
+                        <span id="logs-info"></span>
+                        <div style="display:flex;gap:6px;">
+                            <button class="btn btn-xs" onclick="changeLogPage(-1)">← Prev</button>
+                            <button class="btn btn-xs" onclick="changeLogPage(1)">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── RATE LIMITS ───────────────────────────────────────────────────────── -->
+        <div class="page" id="page-ratelimit">
+            <div class="topbar">
+                <div>
+                    <div class="page-heading">Rate Limits</div>
+                    <div class="page-sub">Penggunaan hari ini per user</div>
+                </div>
+                <button class="btn btn-xs" onclick="loadRateLimits()">Refresh</button>
+            </div>
+            <div class="content">
+                <div class="panel">
+                    <div class="panel-body" id="rl-list">
+                        <div class="loading"><span class="spin"></span>Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── PLANS ─────────────────────────────────────────────────────────────── -->
+        <div class="page" id="page-plans">
+            <div class="topbar">
+                <div>
+                    <div class="page-heading">Plans Config</div>
+                    <div class="page-sub">Edit limit dan harga paket</div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="grid-2">
+                    <div class="panel" id="plan-free-card">
+                        <div class="panel-body">
+                            <div class="loading"><span class="spin"></span>Loading...</div>
+                        </div>
+                    </div>
+                    <div class="panel" id="plan-pro-card">
+                        <div class="panel-body">
+                            <div class="loading"><span class="spin"></span>Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── BILLING ───────────────────────────────────────────────────────────── -->
+        <div class="page" id="page-billing">
+            <div class="topbar">
+                <div>
+                    <div class="page-heading">Billing</div>
+                    <div class="page-sub">Estimasi pendapatan & breakdown</div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="grid-2">
+                    <div>
+                        <div class="mrr-card mb-4">
+                            <div
+                                style="font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
+                                MRR Estimasi</div>
+                            <div class="mrr-val" id="bill-mrr-val">Rp 0</div>
+                            <div class="mrr-label" id="bill-mrr-sub">Dari 0 pengguna Pro</div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-head">
+                                <div class="panel-title">Breakdown</div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="rev-row"><span class="text-muted">Free Users</span><span id="bill-free">0
+                                        users</span></div>
+                                <div class="rev-row"><span class="text-muted">Pro Users</span><span class="text-amber"
+                                        id="bill-pro">0 × Rp 49K</span></div>
+                                <div class="rev-row"><span>Total MRR</span><span class="text-cyan" id="bill-total">Rp
+                                        0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title">Riwayat Billing</div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="empty">Belum ada data historis.</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1224,397 +1458,270 @@
         let adminKey = '';
         let usersPage = 1, logsPage = 1;
 
-        // ── Auth ──────────────────────────────────────────────────────────────────────
+        /* ── Auth ── */
         async function tryLogin() {
             const k = document.getElementById('admin-key-input').value.trim();
             if (!k) return;
-            // Test key against health + admin endpoint
-            const r = await fetch(`${API}/api/admin/stats?adminKey=${encodeURIComponent(k)}`);
-            if (r.ok) {
-                adminKey = k;
-                document.getElementById('auth-gate').style.display = 'none';
-                localStorage.setItem('lann_admin_key', k);
-                loadAll();
-            } else {
-                document.getElementById('auth-err').textContent = 'Admin key salah.';
-            }
+            try {
+                const r = await fetch(`${API}/api/admin/stats?adminKey=${encodeURIComponent(k)}`);
+                if (r.ok) {
+                    adminKey = k;
+                    localStorage.setItem('lann_admin_key', k);
+                    document.getElementById('auth-gate').style.display = 'none';
+                    loadAll();
+                } else {
+                    document.getElementById('auth-err').textContent = 'Admin key salah.';
+                }
+            } catch { document.getElementById('auth-err').textContent = 'Server tidak bisa dijangkau.'; }
         }
 
-        // Check saved key
         window.addEventListener('load', async () => {
             const saved = localStorage.getItem('lann_admin_key');
-            if (saved) {
+            if (!saved) return;
+            try {
                 const r = await fetch(`${API}/api/admin/stats?adminKey=${encodeURIComponent(saved)}`);
-                if (r.ok) {
-                    adminKey = saved;
-                    document.getElementById('auth-gate').style.display = 'none';
-                    document.getElementById('admin-key-input').value = saved;
-                    loadAll();
-                    return;
-                }
-            }
+                if (r.ok) { adminKey = saved; document.getElementById('auth-gate').style.display = 'none'; loadAll(); }
+            } catch { }
         });
 
-        // ── Navigation ────────────────────────────────────────────────────────────────
-        function showPage(name) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        /* ── Nav ── */
+        function showPage(name, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
             document.getElementById('page-' + name).classList.add('active');
-            event?.currentTarget?.classList.add('active');
-
-            if (name === 'users') loadUsers();
-            if (name === 'logs') loadLogs();
-            if (name === 'ratelimit') loadRateLimits();
-            if (name === 'monitoring') loadMonitoring();
-            if (name === 'plans') loadPlans();
-            if (name === 'billing') loadBilling();
+            if (el) el.classList.add('active');
+            const loaders = { users: loadUsers, logs: loadLogs, ratelimit: loadRateLimits, monitoring: loadMonitoring, plans: loadPlans, billing: loadBilling };
+            if (loaders[name]) loaders[name]();
         }
 
-        // ── Load All ─────────────────────────────────────────────────────────────────
-        async function loadAll() {
-            checkHealth();
-            await loadStats();
-        }
+        /* ── Load All ── */
+        async function loadAll() { checkHealth(); loadStats(); }
 
         async function checkHealth() {
             try {
-                const r = await fetch(`${API}/api/health`);
-                const d = await r.json();
-                const dot = document.getElementById('health-dot');
-                const lbl = document.getElementById('health-label');
-                const dbSt = document.getElementById('db-status');
-                if (d.status === 'ok') {
-                    dot.style.background = d.db === 'connected' ? 'var(--green)' : 'var(--amber)';
-                    lbl.textContent = d.db === 'connected' ? 'Server Online' : 'DB Disconnected';
-                    dbSt.textContent = '● ' + (d.db === 'connected' ? 'MongoDB OK' : 'DB Error');
-                    dbSt.style.color = d.db === 'connected' ? 'var(--green)' : 'var(--amber)';
-                }
+                const d = await fetch(`${API}/api/health`).then(r => r.json());
+                const ok = d.db === 'connected';
+                document.getElementById('health-dot').style.background = ok ? 'var(--green)' : 'var(--amber)';
+                document.getElementById('health-dot').style.boxShadow = ok ? '0 0 8px var(--green)' : '';
+                document.getElementById('health-label').textContent = ok ? 'Server Online' : 'DB Issue';
+                const dbEl = document.getElementById('db-status');
+                dbEl.querySelector('.dot').style.background = ok ? 'var(--green)' : 'var(--amber)';
+                dbEl.querySelector('span').textContent = ok ? 'MongoDB OK' : 'DB Error';
             } catch {
                 document.getElementById('health-dot').style.background = 'var(--red)';
-                document.getElementById('health-label').textContent = 'Server Offline';
+                document.getElementById('health-label').textContent = 'Offline';
             }
         }
 
         async function loadStats() {
             try {
-                const r = await fetch(`${API}/api/admin/stats`, { headers: { 'x-admin-key': adminKey } });
-                const d = await r.json();
+                const d = await fetch(`${API}/api/admin/stats`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
                 if (!d.success) return;
-
                 const { stats, requestsLast7, userGrowth, recentLogs } = d;
-
                 document.getElementById('s-users').textContent = stats.totalUsers.toLocaleString();
                 document.getElementById('s-today').textContent = stats.requestsToday.toLocaleString();
                 document.getElementById('s-keys').textContent = stats.totalApiKeys.toLocaleString();
-                document.getElementById('s-duration').textContent = stats.avgDuration ? stats.avgDuration.toLocaleString() + 'ms' : '—';
-                document.getElementById('last-updated').textContent = 'Update: ' + new Date().toLocaleTimeString('id-ID');
-
-                drawChart('chart-requests', 'chart-labels', requestsLast7, 'requests');
-                drawChart('chart-users', 'chart-user-labels', userGrowth, 'users');
+                document.getElementById('s-duration').textContent = stats.avgDuration ? stats.avgDuration + 'ms' : '—';
+                document.getElementById('last-updated').textContent = 'Diperbarui ' + new Date().toLocaleTimeString('id-ID');
+                drawBarChart('chart-req', 'chart-req-labels', requestsLast7, 'req');
+                drawBarChart('chart-usr', 'chart-usr-labels', userGrowth, 'usr');
                 renderPlanDist(stats.planDistribution);
                 renderRecentLogs(recentLogs.slice(0, 8));
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        function drawChart(id, labelId, data, type) {
-            const wrap = document.getElementById(id);
-            const lWrap = document.getElementById(labelId);
-            if (!wrap || !data || data.length === 0) { wrap.innerHTML = '<div class="loading" style="width:100%">Belum ada data</div>'; return; }
-
-            const maxVal = Math.max(...data.map(d => type === 'requests' ? (d.count || 0) : (d.count || 0)), 1);
-            wrap.innerHTML = data.map(d => {
-                const count = d.count || 0;
-                const errors = d.errors || 0;
-                const h = Math.round((count / maxVal) * 160);
-                const eh = Math.round((errors / maxVal) * 160);
-                if (type === 'requests') {
-                    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:flex-end;">
-        <div style="width:100%;height:${eh}px;background:var(--red);opacity:0.7;border-radius:3px 3px 0 0;" title="Errors: ${errors}"></div>
-        <div style="width:100%;height:${h - eh}px;background:var(--cyan);opacity:0.7;border-radius:3px 3px 0 0;" title="Total: ${count}"></div>
-      </div>`;
-                } else {
-                    return `<div class="chart-bar" style="height:${h}px;background:var(--green);opacity:0.75;" title="${count} users"></div>`;
-                }
+        function drawBarChart(areaId, labelId, data, type) {
+            const area = document.getElementById(areaId);
+            const lbls = document.getElementById(labelId);
+            if (!data?.length) { area.innerHTML = '<div class="empty" style="width:100%;padding:0">Belum ada data</div>'; return; }
+            const max = Math.max(...data.map(d => d.count || 0), 1);
+            area.innerHTML = data.map(d => {
+                const count = d.count || 0, errs = d.errors || 0;
+                const h = Math.round((count / max) * 120);
+                const eh = Math.round((errs / max) * 120);
+                if (type === 'req') return `<div class="bar-col"><div class="bar-seg" style="height:${eh}px;background:var(--red);opacity:.75" title="${errs} error"></div><div class="bar-seg" style="height:${Math.max(0, h - eh)}px;background:var(--cyan);opacity:.7" title="${count} total"></div></div>`;
+                return `<div class="bar-col"><div class="bar-seg" style="height:${h}px;background:var(--green);opacity:.75" title="${count} users"></div></div>`;
             }).join('');
-
-            lWrap.innerHTML = data.map(d => {
-                const date = d._id?.slice(5) || '';
-                return `<div class="chart-label">${date}</div>`;
-            }).join('');
+            lbls.innerHTML = data.map(d => `<div class="chart-label">${(d._id || '').slice(5)}</div>`).join('');
         }
 
         function renderPlanDist(dist) {
             const el = document.getElementById('plan-dist');
-            if (!dist || dist.length === 0) { el.innerHTML = '<div class="text-muted" style="font-size:.8rem">Belum ada data</div>'; return; }
+            if (!dist?.length) { el.innerHTML = '<div class="empty">Belum ada data</div>'; return; }
             const total = dist.reduce((s, d) => s + d.count, 0);
             el.innerHTML = dist.map(d => {
-                const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+                const pct = total > 0 ? Math.round(d.count / total * 100) : 0;
                 const col = d._id === 'pro' ? 'var(--amber)' : 'var(--cyan)';
-                return `<div style="margin-bottom:16px;">
-      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;">
+                return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
         <span>${d._id === 'pro' ? '⭐ Pro' : '🆓 Free'}</span>
-        <span style="color:var(--muted)">${d.count} users (${pct}%)</span>
+        <span class="text-muted">${d.count} users (${pct}%)</span>
       </div>
-      <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="prog"><div class="prog-fill" style="width:${pct}%;background:${col}"></div></div>
     </div>`;
             }).join('');
         }
 
         function renderRecentLogs(logs) {
-            const tb = document.getElementById('recent-logs-body');
-            if (!logs || logs.length === 0) { tb.innerHTML = '<tr><td colspan="5" class="text-muted" style="text-align:center;padding:20px">Belum ada request</td></tr>'; return; }
+            const tb = document.getElementById('recent-logs');
+            if (!logs?.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Belum ada request</td></tr>'; return; }
             tb.innerHTML = logs.map(l => {
                 const t = new Date(l.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                const user = l.userId?.email || 'guest';
-                const badge = l.status === 200
-                    ? '<span class="badge badge-green"><span class="dot" style="background:var(--green)"></span>200 OK</span>'
-                    : `<span class="badge badge-red"><span class="dot" style="background:var(--red)"></span>${l.status}</span>`;
-                return `<tr>
-      <td class="mono">${t}</td>
-      <td class="truncate" title="${user}">${user}</td>
-      <td><span class="badge badge-cyan">${l.model || '—'}</span></td>
-      <td class="mono text-muted">${l.duration ? l.duration + 'ms' : '—'}</td>
-      <td>${badge}</td>
-    </tr>`;
+                const badge = l.status === 200 ? '<span class="badge badge-green"><span class="bdot" style="background:var(--green)"></span>200</span>' : `<span class="badge badge-red">${l.status}</span>`;
+                return `<tr><td class="mono">${t}</td><td class="truncate text-muted" style="font-size:.75rem">${l.userId?.email || 'guest'}</td><td><span class="badge badge-cyan">${l.model || '—'}</span></td><td class="mono text-muted">${l.duration ? l.duration + 'ms' : '—'}</td><td>${badge}</td></tr>`;
             }).join('');
         }
 
-        // ── Users ─────────────────────────────────────────────────────────────────────
+        /* ── Monitoring ── */
+        async function loadMonitoring() {
+            const d = await fetch(`${API}/api/admin/logs?limit=200`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
+            if (!d.success) return;
+            const logs = d.logs, total = logs.length;
+            const ok = logs.filter(l => l.status === 200).length, err = logs.filter(l => l.status >= 400).length;
+            document.getElementById('mon-success').textContent = total > 0 ? Math.round(ok / total * 100) + '%' : '—';
+            document.getElementById('mon-error').textContent = total > 0 ? Math.round(err / total * 100) + '%' : '—';
+            document.getElementById('mon-web').textContent = logs.filter(l => l.source === 'web').length;
+            document.getElementById('mon-api').textContent = logs.filter(l => l.source === 'api').length;
+            const errLogs = logs.filter(l => l.status >= 400).slice(0, 20);
+            const tb = document.getElementById('error-logs');
+            if (!errLogs.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--green)">✓ Tidak ada error terbaru</td></tr>'; return; }
+            tb.innerHTML = errLogs.map(l => {
+                const t = new Date(l.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                return `<tr><td class="mono" style="font-size:.72rem">${t}</td><td class="truncate text-muted">${l.userId?.email || 'guest'}</td><td class="text-red" style="font-size:.74rem;max-width:240px">${l.error || 'HTTP ' + l.status}</td><td class="mono text-muted" style="font-size:.7rem">${(l.ip || '').slice(0, 14)}</td><td><span class="badge badge-cyan">${l.model || '—'}</span></td></tr>`;
+            }).join('');
+        }
+
+        /* ── Users ── */
         async function loadUsers() {
             const search = document.getElementById('user-search')?.value || '';
-            const plan = document.getElementById('user-plan-filter')?.value || '';
             let url = `${API}/api/admin/users?page=${usersPage}&limit=15`;
             if (search) url += `&search=${encodeURIComponent(search)}`;
-
             const tb = document.getElementById('users-body');
-            tb.innerHTML = '<tr><td colspan="8" class="loading"><span class="spinner"></span>Loading...</td></tr>';
-
-            const r = await fetch(url, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
+            tb.innerHTML = '<tr><td colspan="8" class="loading"><span class="spin"></span>Loading...</td></tr>';
+            const d = await fetch(url, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
             if (!d.success) return;
-
-            document.getElementById('user-count').textContent = `${d.total} users`;
-            document.getElementById('users-info').textContent = `Halaman ${d.page} dari ${d.pages} (${d.total} total)`;
-
+            document.getElementById('user-count-label').textContent = `${d.total} users terdaftar`;
+            document.getElementById('users-info').textContent = `Hal ${d.page}/${d.pages} (${d.total} total)`;
             tb.innerHTML = d.users.map(u => {
                 const created = new Date(u.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-                const planBadge = u.plan === 'pro'
-                    ? '<span class="badge badge-amber">⭐ Pro</span>'
-                    : '<span class="badge badge-cyan">Free</span>';
-                const statusBadge = u.isActive
-                    ? '<span class="badge badge-green">Aktif</span>'
-                    : '<span class="badge badge-red">Nonaktif</span>';
-                const keyShort = u.apiKey ? u.apiKey.slice(0, 16) + '...' : '—';
+                const planBadge = u.plan === 'pro' ? '<span class="badge badge-amber">⭐ Pro</span>' : '<span class="badge badge-cyan">Free</span>';
+                const statusBadge = u.isActive ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-red">Nonaktif</span>';
+                const keyShort = u.apiKey ? u.apiKey.slice(0, 14) + '...' : '—';
                 return `<tr>
-      <td><strong>${u.name}</strong></td>
-      <td class="mono truncate" style="font-size:.75rem" title="${u.email}">${u.email}</td>
+      <td><strong style="font-size:.82rem">${u.name}</strong></td>
+      <td class="mono truncate" style="font-size:.72rem" title="${u.email}">${u.email}</td>
       <td>${planBadge}</td>
-      <td class="mono" style="font-size:.72rem;color:var(--muted)" title="${u.apiKey || ''}">${keyShort}</td>
+      <td class="mono" style="font-size:.7rem;color:var(--muted)">${keyShort}</td>
       <td class="mono">${(u.totalRequests || 0).toLocaleString()}</td>
-      <td class="text-muted">${created}</td>
+      <td class="text-muted" style="font-size:.76rem">${created}</td>
       <td>${statusBadge}</td>
-      <td>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-sm" onclick="togglePlan('${u._id}','${u.plan}')" title="Toggle Plan">${u.plan === 'pro' ? '→ Free' : '→ Pro'}</button>
-          <button class="btn btn-sm btn-danger" onclick="toggleUser('${u._id}')" title="Toggle Aktif">⊘</button>
-        </div>
-      </td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-xs" onclick="togglePlan('${u._id}','${u.plan}')">${u.plan === 'pro' ? '→Free' : '→Pro'}</button>
+        <button class="btn btn-xs btn-danger" onclick="toggleUser('${u._id}')">⊘</button>
+      </div></td>
     </tr>`;
             }).join('');
         }
-
         function searchUsers() { usersPage = 1; loadUsers(); }
-        function changePage(dir) { usersPage = Math.max(1, usersPage + dir); loadUsers(); }
-
-        async function togglePlan(id, current) {
-            const plan = current === 'pro' ? 'free' : 'pro';
-            if (!confirm(`Ganti plan ke ${plan}?`)) return;
-            await fetch(`${API}/api/admin/users/${id}/plan`, {
-                method: 'PATCH', headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan })
-            });
+        function changePage(d) { usersPage = Math.max(1, usersPage + d); loadUsers(); }
+        async function togglePlan(id, cur) {
+            if (!confirm(`Ganti plan ke ${cur === 'pro' ? 'free' : 'pro'}?`)) return;
+            await fetch(`${API}/api/admin/users/${id}/plan`, { method: 'PATCH', headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: cur === 'pro' ? 'free' : 'pro' }) });
             loadUsers();
         }
-
         async function toggleUser(id) {
             if (!confirm('Toggle status user?')) return;
             await fetch(`${API}/api/admin/users/${id}/toggle`, { method: 'PATCH', headers: { 'x-admin-key': adminKey } });
             loadUsers();
         }
 
-        // ── Logs ─────────────────────────────────────────────────────────────────────
+        /* ── Logs ── */
         async function loadLogs() {
             const status = document.getElementById('log-status')?.value || '';
             const model = document.getElementById('log-model')?.value || '';
             const source = document.getElementById('log-source')?.value || '';
             let url = `${API}/api/admin/logs?page=${logsPage}&limit=30`;
-            if (status) url += `&status=${status}`;
-            if (model) url += `&model=${model}`;
-            if (source) url += `&source=${source}`;
-
+            if (status) url += `&status=${status}`; if (model) url += `&model=${model}`; if (source) url += `&source=${source}`;
             const tb = document.getElementById('logs-body');
-            tb.innerHTML = '<tr><td colspan="8" class="loading"><span class="spinner"></span>Loading...</td></tr>';
-
-            const r = await fetch(url, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
+            tb.innerHTML = '<tr><td colspan="8" class="loading"><span class="spin"></span>Loading...</td></tr>';
+            const d = await fetch(url, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
             if (!d.success) return;
-
-            document.getElementById('log-count').textContent = `${d.total} logs`;
-            document.getElementById('logs-info').textContent = `Halaman ${d.page} dari ${d.pages}`;
-
+            document.getElementById('log-count-label').textContent = `${d.total} log request`;
+            document.getElementById('logs-info').textContent = `Hal ${d.page}/${d.pages}`;
             tb.innerHTML = d.logs.map(l => {
                 const t = new Date(l.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                const badge = l.status === 200
-                    ? '<span class="badge badge-green">200 OK</span>'
-                    : `<span class="badge badge-red">${l.status}</span>`;
-                const srcBadge = l.source === 'api'
-                    ? '<span class="badge badge-amber">API</span>'
-                    : '<span class="badge badge-gray">Web</span>';
-                return `<tr>
-      <td class="mono" style="font-size:.75rem">${t}</td>
-      <td class="truncate text-muted" style="font-size:.75rem">${l.userId?.email || 'guest'}</td>
-      <td><span class="badge badge-cyan">${l.model || '—'}</span></td>
-      <td>${srcBadge}</td>
-      <td class="mono text-muted">${l.fileSize ? (l.fileSize / 1024).toFixed(0) + 'KB' : '—'}</td>
-      <td class="mono text-muted">${l.duration ? l.duration + 'ms' : '—'}</td>
-      <td class="mono text-muted" style="font-size:.72rem">${(l.ip || '').slice(0, 15)}</td>
-      <td>${badge}</td>
-    </tr>`;
+                const badge = l.status === 200 ? '<span class="badge badge-green">200</span>' : `<span class="badge badge-red">${l.status}</span>`;
+                const src = l.source === 'api' ? '<span class="badge badge-amber">API</span>' : '<span class="badge badge-gray">Web</span>';
+                return `<tr><td class="mono" style="font-size:.72rem">${t}</td><td class="truncate text-muted" style="font-size:.74rem">${l.userId?.email || 'guest'}</td><td><span class="badge badge-cyan">${l.model || '—'}</span></td><td>${src}</td><td class="mono text-muted">${l.fileSize ? (l.fileSize / 1024).toFixed(0) + 'KB' : '—'}</td><td class="mono text-muted">${l.duration ? l.duration + 'ms' : '—'}</td><td class="mono text-muted" style="font-size:.7rem">${(l.ip || '').slice(0, 14)}</td><td>${badge}</td></tr>`;
             }).join('');
         }
-        function changeLogPage(dir) { logsPage = Math.max(1, logsPage + dir); loadLogs(); }
+        function changeLogPage(d) { logsPage = Math.max(1, logsPage + d); loadLogs(); }
 
-        // ── Rate Limits ───────────────────────────────────────────────────────────────
+        /* ── Rate Limits ── */
         async function loadRateLimits() {
             const el = document.getElementById('rl-list');
-            el.innerHTML = '<div class="loading"><span class="spinner"></span>Loading...</div>';
-            const r = await fetch(`${API}/api/admin/rate-limits`, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
+            el.innerHTML = '<div class="loading"><span class="spin"></span>Loading...</div>';
+            const d = await fetch(`${API}/api/admin/rate-limits`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
             if (!d.success) return;
-            if (d.rateLimits.length === 0) { el.innerHTML = '<div class="text-muted" style="font-size:.82rem;text-align:center;padding:20px">Belum ada penggunaan hari ini.</div>'; return; }
+            if (!d.rateLimits.length) { el.innerHTML = '<div class="empty">Belum ada penggunaan hari ini.</div>'; return; }
             el.innerHTML = d.rateLimits.map(u => {
                 const col = u.pct >= 90 ? 'var(--red)' : u.pct >= 70 ? 'var(--amber)' : 'var(--cyan)';
                 return `<div class="rl-row">
       <div class="rl-name" title="${u.email}">${u.user || u.email}</div>
-      <span class="badge ${u.plan === 'pro' ? 'badge-amber' : 'badge-cyan'}" style="font-size:.65rem">${u.plan}</span>
-      <div class="rl-bar">
-        <div class="prog-wrap"><div class="prog-fill" style="width:${u.pct}%;background:${col}"></div></div>
-      </div>
-      <div class="rl-count">${u.used}/${u.limit}</div>
-      <div style="min-width:40px;text-align:right;font-size:.75rem;font-weight:700;" style="color:${col}">${u.pct}%</div>
+      <span class="badge ${u.plan === 'pro' ? 'badge-amber' : 'badge-cyan'}" style="font-size:.62rem">${u.plan}</span>
+      <div class="rl-bar"><div class="prog"><div class="prog-fill" style="width:${u.pct}%;background:${col}"></div></div></div>
+      <div class="rl-num">${u.used}/${u.limit}</div>
+      <div class="rl-pct" style="color:${col}">${u.pct}%</div>
     </div>`;
             }).join('');
         }
 
-        // ── Monitoring ───────────────────────────────────────────────────────────────
-        async function loadMonitoring() {
-            const r = await fetch(`${API}/api/admin/logs?limit=200`, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
-            if (!d.success) return;
-
-            const logs = d.logs;
-            const success = logs.filter(l => l.status === 200).length;
-            const errors = logs.filter(l => l.status >= 400).length;
-            const web = logs.filter(l => l.source === 'web').length;
-            const api = logs.filter(l => l.source === 'api').length;
-            const total = logs.length;
-
-            document.getElementById('mon-success').textContent = total > 0 ? Math.round(success / total * 100) + '%' : '—';
-            document.getElementById('mon-error').textContent = total > 0 ? Math.round(errors / total * 100) + '%' : '—';
-            document.getElementById('mon-web').textContent = web;
-            document.getElementById('mon-api').textContent = api;
-
-            const errLogs = logs.filter(l => l.status >= 400).slice(0, 20);
-            const tb = document.getElementById('error-log-body');
-            if (errLogs.length === 0) {
-                tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--green)">✓ Tidak ada error terbaru</td></tr>';
-                return;
-            }
-            tb.innerHTML = errLogs.map(l => {
-                const t = new Date(l.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                return `<tr>
-      <td class="mono" style="font-size:.75rem">${t}</td>
-      <td class="text-muted truncate">${l.userId?.email || 'guest'}</td>
-      <td class="text-red" style="font-size:.75rem;max-width:280px;">${l.error || `HTTP ${l.status}`}</td>
-      <td class="mono text-muted" style="font-size:.72rem">${(l.ip || '').slice(0, 15)}</td>
-      <td><span class="badge badge-cyan">${l.model || '—'}</span></td>
-    </tr>`;
-            }).join('');
-        }
-
-        // ── Plans ─────────────────────────────────────────────────────────────────────
+        /* ── Plans ── */
         async function loadPlans() {
-            const r = await fetch(`${API}/api/admin/plans`, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
+            const d = await fetch(`${API}/api/admin/plans`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json());
             if (!d.success) return;
-
-            d.plans.forEach(plan => {
-                const card = document.getElementById(`plan-${plan.name}-card`);
+            d.plans.forEach(p => {
+                const card = document.getElementById(`plan-${p.name}-card`);
                 if (!card) return;
+                const isPro = p.name === 'pro';
                 card.innerHTML = `
-      <div class="card-title" style="color:${plan.name === 'pro' ? 'var(--amber)' : 'var(--cyan)'}">
-        Plan: ${plan.label} ${plan.name === 'pro' ? '⭐' : '🆓'}
-      </div>
-      <div class="plan-editor" style="margin-bottom:16px;">
-        <div class="field-group">
-          <div class="field-label">Limit/Hari</div>
-          <input class="field-input" id="${plan.name}-limit" value="${plan.dailyLimit}" type="number"/>
-        </div>
-        <div class="field-group">
-          <div class="field-label">Harga (Rp)</div>
-          <input class="field-input" id="${plan.name}-price" value="${plan.price}" type="number"/>
-        </div>
-        <div class="field-group">
-          <div class="field-label">Maks File (MB)</div>
-          <input class="field-input" id="${plan.name}-mb" value="${plan.maxFileMB}" type="number"/>
-        </div>
-        <div class="field-group">
-          <div class="field-label">Models (koma)</div>
-          <input class="field-input" id="${plan.name}-models" value="${(plan.models || []).join(',')}"/>
+      <div class="panel-head">
+        <div class="panel-title" style="color:${isPro ? 'var(--amber)' : 'var(--cyan)'}">
+          ${isPro ? '⭐' : '🆓'} Plan ${p.label}
         </div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="savePlan('${plan.name}')">Simpan Perubahan</button>
-    `;
+      <div class="panel-body">
+        <div class="field-row">
+          <div class="field"><div class="field-label">Limit/Hari</div><input class="field-input" id="${p.name}-limit" value="${p.dailyLimit}" type="number"/></div>
+          <div class="field"><div class="field-label">Harga (Rp)</div><input class="field-input" id="${p.name}-price" value="${p.price}" type="number"/></div>
+          <div class="field"><div class="field-label">Maks File MB</div><input class="field-input" id="${p.name}-mb" value="${p.maxFileMB}" type="number"/></div>
+          <div class="field"><div class="field-label">Models</div><input class="field-input" id="${p.name}-models" value="${(p.models || []).join(',')}"/></div>
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="savePlan('${p.name}')">Simpan Perubahan</button>
+      </div>`;
             });
         }
-
         async function savePlan(name) {
-            const body = {
-                dailyLimit: parseInt(document.getElementById(`${name}-limit`).value),
-                price: parseInt(document.getElementById(`${name}-price`).value),
-                maxFileMB: parseInt(document.getElementById(`${name}-mb`).value),
-                models: document.getElementById(`${name}-models`).value.split(',').map(s => s.trim())
-            };
-            const r = await fetch(`${API}/api/admin/plans/${name}`, {
-                method: 'PATCH', headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            const d = await r.json();
-            alert(d.success ? '✅ Plan berhasil diupdate!' : '❌ Gagal: ' + d.error);
+            const body = { dailyLimit: +document.getElementById(`${name}-limit`).value, price: +document.getElementById(`${name}-price`).value, maxFileMB: +document.getElementById(`${name}-mb`).value, models: document.getElementById(`${name}-models`).value.split(',').map(s => s.trim()) };
+            const d = await fetch(`${API}/api/admin/plans/${name}`, { method: 'PATCH', headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+            alert(d.success ? '✅ Plan diupdate!' : '❌ Gagal: ' + d.error);
         }
 
-        // ── Billing ──────────────────────────────────────────────────────────────────
+        /* ── Billing ── */
         async function loadBilling() {
-            const r = await fetch(`${API}/api/admin/users?limit=1000`, { headers: { 'x-admin-key': adminKey } });
-            const d = await r.json();
-            if (!d.success) return;
-
-            const plans_r = await fetch(`${API}/api/admin/plans`, { headers: { 'x-admin-key': adminKey } });
-            const plans_d = await plans_r.json();
-            const proPlan = plans_d.plans?.find(p => p.name === 'pro');
-            const proPrice = proPlan?.price || 49000;
-
-            const freeCount = d.users.filter(u => u.plan !== 'pro').length;
-            const proCount = d.users.filter(u => u.plan === 'pro').length;
+            const [ud, pd] = await Promise.all([
+                fetch(`${API}/api/admin/users?limit=1000`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json()),
+                fetch(`${API}/api/admin/plans`, { headers: { 'x-admin-key': adminKey } }).then(r => r.json())
+            ]);
+            const proPrice = pd.plans?.find(p => p.name === 'pro')?.price || 49000;
+            const freeCount = ud.users?.filter(u => u.plan !== 'pro').length || 0;
+            const proCount = ud.users?.filter(u => u.plan === 'pro').length || 0;
             const mrr = proCount * proPrice;
-
-            document.getElementById('bill-revenue').textContent = 'Rp ' + mrr.toLocaleString('id-ID');
-            document.getElementById('bill-sub').textContent = `Dari ${proCount} pengguna Pro`;
+            document.getElementById('bill-mrr-val').textContent = 'Rp ' + mrr.toLocaleString('id-ID');
+            document.getElementById('bill-mrr-sub').textContent = `Dari ${proCount} pengguna Pro`;
             document.getElementById('bill-free').textContent = `${freeCount} users`;
-            document.getElementById('bill-pro').textContent = `${proCount} users × Rp ${proPrice.toLocaleString('id-ID')}`;
-            document.getElementById('bill-mrr').textContent = 'Rp ' + mrr.toLocaleString('id-ID');
+            document.getElementById('bill-pro').textContent = `${proCount} × Rp ${proPrice.toLocaleString('id-ID')}`;
+            document.getElementById('bill-total').textContent = 'Rp ' + mrr.toLocaleString('id-ID');
         }
     </script>
 </body>
