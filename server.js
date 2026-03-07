@@ -263,13 +263,13 @@ app.post('/api/remove-bg', apiKeyMiddleware, upload.single('image'), (req, res) 
     const allowedModels = ['u2net', 'u2netp'];
     const model = allowedModels.includes(req.body.model) ? req.body.model : 'u2netp';
 
-    // u2net (HQ) hanya untuk Pro
-    const isPro = req.apiUser && req.apiUser.tier === 'pro';
-    if (model === 'u2net' && !isPro) {
+    // u2net hanya diblokir untuk API key FREE — web langsung bebas
+    const isApiKeyFree = req.apiUser && req.apiUser.tier !== 'pro';
+    if (model === 'u2net' && isApiKeyFree) {
         fs.unlink(req.file.path, () => { });
         return res.status(403).json({
             success: false,
-            error: 'Model u2net (HQ) hanya tersedia untuk pengguna Pro.',
+            error: 'Model u2net hanya tersedia untuk API key Pro. Upgrade di api.html',
             upgrade: true
         });
     }
