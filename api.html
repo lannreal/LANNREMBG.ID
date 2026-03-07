@@ -1762,8 +1762,14 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
                 const data = await res.json();
                 if (!data.success) { doLogout(); return; }
 
-                currentUser = data.user;
-                renderDashboard(data.user, data.usage, data.history);
+                // Merge apiKey dari response baru (MongoDB) ke dalam user object
+                currentUser = {
+                    ...data.user,
+                    apiKey: data.apiKey?.key || data.user.apiKey || null,
+                    keyCreatedAt: data.apiKey?.createdAt || data.user.keyCreatedAt || data.user.createdAt,
+                    tier: data.plan?.name || data.user.plan || data.user.tier || 'free'
+                };
+                renderDashboard(currentUser, data.usage, data.history);
             } catch {
                 toast('Gagal memuat data.', 'error');
             }
@@ -1850,8 +1856,8 @@ console.<span class="c-method">log</span>(data.resultUrl); <span class="c-commen
                 });
                 const data = await res.json();
                 if (!data.success) return toast(data.error || 'Gagal regenerasi.', 'error');
-                currentUser.apiKey = data.apiKey;
-                currentUser.keyCreatedAt = data.keyCreatedAt;
+                currentUser.apiKey = data.apiKey?.key || data.apiKey || currentUser.apiKey;
+                currentUser.keyCreatedAt = data.apiKey?.createdAt || data.createdAt || currentUser.keyCreatedAt;
                 keyVisible = false;
                 loadDashboard();
                 toast('API key baru berhasil dibuat!');
